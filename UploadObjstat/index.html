@@ -1,0 +1,15 @@
+<script>
+  function giveUrl(url) {
+    var div = document.getElementById('output');
+    div.innerHTML = '<a href="' + url + '">Spreadsheet created</a>';
+  }
+</script>
+<div>
+<form id="sheetForm">
+Spreadsheets Name: <input name="ssName" type="text" /><br>
+Zip File: <input name="zipFile" type="file" accept=".zip" /><br>
+<input type="button" value="Submit"
+        onclick="google.script.run.withSuccessHandler(giveUrl).processForm(this.parentNode)" />
+</form>
+<div id="output"></div>
+</div>
