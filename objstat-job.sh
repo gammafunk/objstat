@@ -53,5 +53,5 @@ then
         mv tmp.$$ "$i"
     done
 fi
-zip "$1".zip objstat*.txt >/dev/null
+zip "$OUT_DIR".zip objstat*.txt >/dev/null
 echo "Objstat in dir $OUT_DIR complete"
