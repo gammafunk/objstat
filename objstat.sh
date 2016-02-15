@@ -19,12 +19,13 @@ JOBS["extended-no-abyss-pan-zig"]="D,Temple,Sewer,Ossuary,Orc,Elf,Bailey, \
                                    WizLab,Depths,Zot,Hell,Geh,Coc,Dis,Tar"
 JOBS["abyss-pan-zig"]="Abyss,Pan,Zig"
 JOB=
+PARALLEL=false
 
 function do_help() {
     echo "$0 [-c <crawl-dir> ] [-j <job-name>] [-n <num>]"
 }
 
-while getopts "h?c:n:j:" opt; do
+while getopts "h?pc:n:j:" opt; do
     case "$opt" in
         h|\?)
             do_help
@@ -32,7 +33,7 @@ while getopts "h?c:n:j:" opt; do
             ;;
         c)  CRAWL_DIR="$OPTARG"
             ;;
-        j)  
+        j)
             if [ -z "${JOBS[$OPTARG]}" ]; then
                 echo "Job name must be one of: ${!JOBS[@]}"
                 exit 1
@@ -42,14 +43,14 @@ while getopts "h?c:n:j:" opt; do
             ;;
         n)  NUM_ITERS="$OPTARG"
             ;;
+        p)  PARALLEL=true
     esac
 done
 
 
 tldir=`cd "$CRAWL_DIR" && git rev-parse --show-toplevel`
 SDIR="$tldir/crawl-ref/source"
-# 24-hour timeout since a single job can take many hours
-gcc -DTIMEOUT=1440 "$SDIR"/util/fake_pty.c -o fake_pty -lutil
+
 
 if [ -n "$JOB" ]; then
     JOB_ARGS=
@@ -57,13 +58,21 @@ if [ -n "$JOB" ]; then
         JOB_ARGS="-r"
     fi
     ./objstat-job.sh -c "$CRAWL_DIR" -d "$JOB" -l "${JOBS[$JOB]}" -n "$NUM_ITERS" "$JOB_ARGS"
-else
+elif [ "$PARALLEL" = "true" ]; then
+    # Need fake_pty since these are being run through parallel without a tty.
+    # one-week timeout. A single job can take a few days on a EC2 micro instance
+    # with only 10% of one cpu.
+    gcc -DTIMEOUT=10080 "$SDIR"/util/fake_pty.c -o fake_pty -lutil
+
     parallel --ungroup <<EOF
-./objstat-job.sh -c "$CRAWL_DIR" -d 3-rune-swamp-snake -l "${JOBS[3-rune-swamp-snake]}" -n "$NUM_ITERS"
-./objstat-job.sh -c "$CRAWL_DIR" -d 3-rune-shoals-spider -l "${JOBS[3-rune-shoals-spider]}" -n "$NUM_ITERS"
-./objstat-job.sh -c "$CRAWL_DIR" -d extended-no-abyss-pan-zig -l "${JOBS[extended-no-abyss-pan-zig]}" -n "$NUM_ITERS"
-./objstat-job.sh -c "$CRAWL_DIR" -d abyss-pan-zig -l "${JOBS[abyss-pan-zig]}" -n "$NUM_ITERS" -r
+./objstat-job.sh -t -c "$CRAWL_DIR" -d 3-rune-swamp-snake -l "${JOBS[3-rune-swamp-snake]}" -n "$NUM_ITERS"
+./objstat-job.sh -t -c "$CRAWL_DIR" -d 3-rune-shoals-spider -l "${JOBS[3-rune-shoals-spider]}" -n "$NUM_ITERS"
+./objstat-job.sh -t -c "$CRAWL_DIR" -d extended-no-abyss-pan-zig -l "${JOBS[extended-no-abyss-pan-zig]}" -n "$NUM_ITERS"
+./objstat-job.sh -t -c "$CRAWL_DIR" -d abyss-pan-zig -l "${JOBS[abyss-pan-zig]}" -n "$NUM_ITERS" -r
 EOF
-
+else
+    ./objstat-job.sh -c "$CRAWL_DIR" -d 3-rune-swamp-snake -l "${JOBS[3-rune-swamp-snake]}" -n "$NUM_ITERS"
+    ./objstat-job.sh -c "$CRAWL_DIR" -d 3-rune-shoals-spider -l "${JOBS[3-rune-shoals-spider]}" -n "$NUM_ITERS"
+    ./objstat-job.sh -c "$CRAWL_DIR" -d extended-no-abyss-pan-zig -l "${JOBS[extended-no-abyss-pan-zig]}" -n "$NUM_ITERS"
+    ./objstat-job.sh -c "$CRAWL_DIR" -d abyss-pan-zig -l "${JOBS[abyss-pan-zig]}" -n "$NUM_ITERS" -r
 fi
-
