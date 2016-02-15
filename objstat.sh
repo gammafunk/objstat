@@ -22,7 +22,7 @@ JOB=
 PARALLEL=false
 
 function do_help() {
-    echo "$0 [-c <crawl-dir> ] [-j <job-name>] [-n <num>]"
+    echo "$0 [-p] [-c <crawl-dir> ] [-j <job-name>] [-n <num>]"
 }
 
 while getopts "h?pc:n:j:" opt; do

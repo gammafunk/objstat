@@ -11,7 +11,7 @@ LEVELS=
 while getopts "h?rtc:d:l:n:" opt; do
     case "$opt" in
         h|\?)
-            echo "$0 [-r] [-c <crawl-dir>] [-d <out-dir>] [-l <levels>] [-n <num>]"
+            echo "$0 [-t] [-r] [-c <crawl-dir>] [-d <out-dir>] [-l <levels>] [-n <num>]"
             exit 0
             ;;
         c)  CRAWL_DIR="$OPTARG"
