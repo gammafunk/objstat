@@ -40,12 +40,12 @@ echo "Running objstat in dir $OUT_DIR for $NUM_ITERS iterations"
 set -e
 mkdir -p "$OUT_DIR"
 
-
 TTY_COMMAND=
 if [ "$NEED_TTY" = "true" ]; then
     TTY_COMMAND=./fake_pty
 fi
-cp -r $TTY_COMMAND $SDIR/crawl $SDIR/dat $OUT_DIR
+rm -rf "$OUT_DIR/dat"
+cp -r $TTY_COMMAND "$SDIR/crawl" "$SDIR/dat" "$OUT_DIR"
 cd "$OUT_DIR"
 
 ## Have to build the db first since crawl gets confused when building
