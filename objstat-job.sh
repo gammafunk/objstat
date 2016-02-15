@@ -2,29 +2,31 @@
 
 ## Run an individual objstat job
 
-REMOVE_SUMMARY=false
-NEED_TTY=false
-OUT_DIR=.
-CRAWL_DIR=.
-NUM_ITERS=5
-LEVELS=
+remove_summary=false
+need_tty=false
+out_dir=.
+crawl_dir=.
+num_iters=1
+levels=
 while getopts "h?rtc:d:l:n:" opt; do
     case "$opt" in
         h|\?)
-            echo "$0 [-t] [-r] [-c <crawl-dir>] [-d <out-dir>] [-l <levels>] [-n <num>]"
+            help="$0 [-t] [-r] [-c <crawl-dir>] [-d <out-dir>] [-l <levels>]"
+            help+=" [-n <num>]"
+            echo "$help"
             exit 0
             ;;
-        c)  CRAWL_DIR="$OPTARG"
+        c)  crawl_dir="$OPTARG"
             ;;
-        d)  OUT_DIR="$OPTARG"
+        d)  out_dir="$OPTARG"
             ;;
-        l)  LEVELS="$OPTARG"
+        l)  levels="$OPTARG"
             ;;
-        n)  NUM_ITERS="$OPTARG"
+        n)  num_iters="$OPTARG"
             ;;
-        r)  REMOVE_SUMMARY=true
+        r)  remove_summary=true
             ;;
-        t)  NEED_TTY=true
+        t)  need_tty=true
             ;;
     esac
 done
@@ -32,34 +34,33 @@ done
 shift $((OPTIND-1))
 [ "$1" = "--" ] && shift
 
+tldir=$(cd "$crawl_dir" && git rev-parse --show-toplevel)
+source_dir="$tldir/crawl-ref/source"
 
-tldir=`cd $CRAWL_DIR && git rev-parse --show-toplevel`
-SDIR="$tldir/crawl-ref/source"
-
-echo "Running objstat in dir $OUT_DIR for $NUM_ITERS iterations"
+echo "Running objstat in dir $out_dir for $num_iters iterations"
 set -e
-mkdir -p "$OUT_DIR"
+mkdir -p "$out_dir"
 
-TTY_COMMAND=
-if [ "$NEED_TTY" = "true" ]; then
-    TTY_COMMAND=./fake_pty
+tty_command=
+if [ "$need_tty" = "true" ]; then
+    tty_command=./fake_pty
 fi
-rm -rf "$OUT_DIR/dat"
-cp -r $TTY_COMMAND "$SDIR/crawl" "$SDIR/dat" "$OUT_DIR"
-cd "$OUT_DIR"
+rm -rf "$out_dir/dat"
+cp -r $tty_command "$source_dir/crawl" "$source_dir/dat" "$out_dir"
+cd "$out_dir"
 
 ## Have to build the db first since crawl gets confused when building
 ## the map cache time under objstat/mapstat.
 ./crawl -builddb
-$TTY_COMMAND ./crawl -objstat "$LEVELS" -iters $NUM_ITERS
-rm -r $TTY_COMMAND crawl dat morgue saves
+$tty_command ./crawl -objstat "$levels" -iters "$num_iters"
+rm -r $tty_command crawl dat morgue saves
 ## Remove the AllLevels summary
-if [ "$REMOVE_SUMMARY" = "true" ]; then
+if [ "$remove_summary" = "true" ]; then
     for i in objstat*.txt
     do
         cat "$i" | grep -v AllLevels > tmp.$$
         mv tmp.$$ "$i"
     done
 fi
-zip "$OUT_DIR".zip objstat*.txt >/dev/null
-echo "Objstat in dir $OUT_DIR complete"
+zip "$out_dir".zip objstat*.txt >/dev/null
+echo "Objstat in dir $out_dir complete"
