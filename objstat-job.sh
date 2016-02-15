@@ -43,7 +43,7 @@ mkdir -p "$OUT_DIR"
 
 TTY_COMMAND=
 if [ "$NEED_TTY" = "true" ]; then
-    TTY_COMMAND=fake_pty
+    TTY_COMMAND=./fake_pty
 fi
 cp -r $TTY_COMMAND $SDIR/crawl $SDIR/dat $OUT_DIR
 cd "$OUT_DIR"
@@ -51,7 +51,7 @@ cd "$OUT_DIR"
 ## Have to build the db first since crawl gets confused when building
 ## the map cache time under objstat/mapstat.
 ./crawl -builddb
-./$TTY_COMMAND ./crawl -objstat "$LEVELS" -iters $NUM_ITERS
+$TTY_COMMAND ./crawl -objstat "$LEVELS" -iters $NUM_ITERS
 rm -r $TTY_COMMAND crawl dat morgue saves
 ## Remove the AllLevels summary
 if [ "$REMOVE_SUMMARY" = "true" ]; then
