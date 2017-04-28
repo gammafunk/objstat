@@ -39,7 +39,7 @@ else
     command=
     for ((i=1; i <= num_jobs; i++)); do
         command+="./mapstat-job.sh -t -c \"$crawl_dir\" -d \"job_${i}\""
-        command+=" -l \"${job_levels[$j]}\" -n \"$iters_per_job\""
+        command+=" -l \"$levels\" -n \"$iters_per_job\""
         command+=$'\n'
     done
     parallel --ungroup <<< "$command"
