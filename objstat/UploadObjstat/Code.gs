@@ -65,7 +65,6 @@ function processForm(formObject) {
     } else if (monsInd < 0) {
         upudateOutput("Unable to find Monsters file", true);
         return;
-    }
     } else if (featInd < 0) {
         upudateOutput("Unable to find Features file", true);
         return;
