@@ -8,6 +8,7 @@ function sheetFromFile(ss, name, file, doFreeze)
     var csv = Utilities.parseCsv(file.getDataAsString(), "\t");
     var numRows = csv.length;
     var numCols = csv[0].length;
+
     var sheet = ss.insertSheet(name);
     doFreeze = typeof doFreeze === 'undefined' ? true : doFreeze;
 
@@ -20,6 +21,7 @@ function sheetFromFile(ss, name, file, doFreeze)
         sheet.setFrozenColumns(2);
         sheet.setFrozenRows(1);
     }
+
     return sheet;
 }
 
@@ -27,6 +29,7 @@ function updateOutput(output, isError) {
     if (isError) {
         output = "ERROR: " + output;
     }
+
     Logger.log(output);
 }
 
@@ -35,6 +38,7 @@ function processForm(formObject) {
     var files = Utilities.unzip(formObject.zipFile);
     var numFiles = files.length;
     updateOutput("Unziped " + numFiles + " files");
+
     var itemIndices = [];
     var itemNames = [];
     var infoInd = -1;
@@ -71,11 +75,14 @@ function processForm(formObject) {
     var ssFile = DriveApp.getFileById(ss.getId());
     folder.addFile(ssFile);
     DriveApp.getRootFolder().removeFile(ssFile);
+
     var emptySheet = ss.getActiveSheet();
     updateOutput("Created Spreadsheet" + formObject.ssName);
+
     var sheet = sheetFromFile(ss, "Info", files[infoInd], false);
     updateOutput("Parsed " + sheet.getLastRow() + " rows and "
                  + sheet.getLastColumn() + " columns from Info");
+
     sheet = sheetFromFile(ss, "Monsters", files[monsInd]);
     updateOutput("Parsed " + sheet.getLastRow() + " rows and "
                  + sheet.getLastColumn() + " columns from Monsters");
@@ -87,6 +94,7 @@ function processForm(formObject) {
         return itemNames[a] < itemNames[b] ? -1 : 1;
     }
     itemIndices = itemIndices.sort(item_sort);
+
     var numTables = itemIndices.length;
     for (var i = 0; i < numTables; i++) {
         sheet = sheetFromFile(ss, itemNames[i], files[itemIndices[i]]);
@@ -94,5 +102,6 @@ function processForm(formObject) {
                      + sheet.getLastColumn() + " columns from " + itemNames[i]);
     }
     updateOutput("Sheet created at " + ss.getUrl());
+
     return ss.getUrl();
 }
