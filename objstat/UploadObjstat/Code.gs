@@ -43,6 +43,7 @@ function processForm(formObject) {
     var itemNames = [];
     var infoInd = -1;
     var monsInd = -1;
+    var featInd = -1;
 
     for (var i = 0; i < numFiles; i++) {
         var name = files[i].getName()
@@ -51,6 +52,8 @@ function processForm(formObject) {
             infoInd = i;
         } else if (name == "Monsters") {
             monsInd = i;
+        } else if (name == "Features") {
+            featInd = i;
         } else {
             itemIndices[itemIndices.length] = i;
             itemNames[itemNames.length] = name;
@@ -61,6 +64,10 @@ function processForm(formObject) {
         return;
     } else if (monsInd < 0) {
         upudateOutput("Unable to find Monsters file", true);
+        return;
+    }
+    } else if (featInd < 0) {
+        upudateOutput("Unable to find Features file", true);
         return;
     }
 
@@ -86,6 +93,11 @@ function processForm(formObject) {
     sheet = sheetFromFile(ss, "Monsters", files[monsInd]);
     updateOutput("Parsed " + sheet.getLastRow() + " rows and "
                  + sheet.getLastColumn() + " columns from Monsters");
+
+    sheet = sheetFromFile(ss, "Features", files[featInd]);
+    updateOutput("Parsed " + sheet.getLastRow() + " rows and "
+                 + sheet.getLastColumn() + " columns from Features");
+
     ss.setActiveSheet(emptySheet);
     ss.deleteActiveSheet();
     ss.setActiveSheet(sheet);
