@@ -43,17 +43,16 @@ mkdir -p "$out_dir"
 
 tty_command=
 if [ "$need_tty" = "true" ]; then
-    tty_command=./fake_pty
+    tty_command=../fake_pty
 fi
 rm -rf "$out_dir/dat"
-cp -r $tty_command "$source_dir/crawl" "$source_dir/dat" "$out_dir"
+cp -r "$source_dir/crawl" "$source_dir/dat" "$out_dir"
 cd "$out_dir"
 
 ## Have to build the db first since crawl gets confused when building
 ## the map cache time under objstat/mapstat.
 ./crawl -builddb
 $tty_command ./crawl -objstat "$levels" -iters "$num_iters"
-rm -r $tty_command crawl dat morgue saves
 ## Remove the AllLevels summary
 if [ "$remove_summary" = "true" ]; then
     for i in objstat*.txt
@@ -62,5 +61,7 @@ if [ "$remove_summary" = "true" ]; then
         mv tmp.$$ "$i"
     done
 fi
+rm -rf crawl dat morgue saves
 zip "$out_dir".zip objstat*.txt >/dev/null
+rm objstat*.txt
 echo "Objstat in dir $out_dir complete"
