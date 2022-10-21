@@ -55,13 +55,13 @@ cd "$out_dir"
 $tty_command ./crawl -objstat "$levels" -iters "$num_iters"
 ## Remove the AllLevels summary
 if [ "$remove_summary" = "true" ]; then
-    for i in objstat*.txt
+    for i in objstat*.tsv
     do
         cat "$i" | grep -v AllLevels > tmp.$$
         mv tmp.$$ "$i"
     done
 fi
 rm -rf crawl dat morgue saves
-zip "$out_dir".zip objstat*.txt >/dev/null
-rm objstat*.txt
+zip "$out_dir".zip objstat*.tsv >/dev/null
+rm objstat*.tsv
 echo "Objstat in dir $out_dir complete"

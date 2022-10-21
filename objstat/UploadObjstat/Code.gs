@@ -47,7 +47,7 @@ function processForm(formObject) {
 
     for (var i = 0; i < numFiles; i++) {
         var name = files[i].getName()
-        name = name.replace("objstat_", "").replace(".txt", "");
+        name = name.replace("objstat_", "").replace(".tsv", "");
         if (name == "Info") {
             infoInd = i;
         } else if (name == "Monsters") {
