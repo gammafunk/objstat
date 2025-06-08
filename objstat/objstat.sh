@@ -10,7 +10,7 @@ crawl_dir=.
 declare -A job_levels
 declare -A job_args
 base_levels="Bailey,Bazaar,Crypt,D,Depths,Desolation,Elf,IceCv,Gauntlet,Lair,Orc"
-base_levels+=",Ossuary,Sewer,Temple,Trove,Vaults,Volcano,WizLab,Zot"
+base_levels+=",Ossuary,Necropolis,Sewer,Temple,Trove,Vaults,Volcano,WizLab,Zot"
 
 job_levels["3-rune-swamp-snake"]="${base_levels},Swamp,Snake"
 job_args["3-rune-swamp-snake"]=
